@@ -56,12 +56,16 @@ class Character
   def attack enemy
     if rand(100) <= @crit_chance
       critical_damage = @strength + @strength * @crit_damage / 100
-      say "critical attacks #{enemy.name} and deals #{critical_damage} damage"
+      say "critical attacks #{colorize enemy.name, enemy.color} and deals #{critical_damage} damage"
       enemy.injure critical_damage
     else
-      say "attacks #{enemy.name} and deals #{@strength} damage"
+      say "attacks #{colorize enemy.name, enemy.color} and deals #{@strength} damage"
       enemy.injure @strength
     end
+  end
+
+  def status
+    say "- health: #{@health}, strength: #{@strength}, mana: #{@mana}, crit_chance: #{@crit_chance}, crit_damage: #{@crit_damage}"
   end
 
   protected
@@ -124,7 +128,7 @@ class Berserker < Character
   end
 
   def slam enemy
-    say "attacks #{enemy.name} and deals #{@strength * 1.4} damage"
+    say "slams #{colorize enemy.name, enemy.color} and deals #{@strength * 1.4} damage"
     say "strains himself #{@strength * 0.4} damage"
     enemy.injure @strength * 1.4
     self.injure @strength * 0.4
@@ -168,22 +172,23 @@ mage = Mage.new
 
 
 (1..20).each do |n|
-  puts "badguthealth is #{bad_guy.health}"
+  bad_guy.status
   knight.attack bad_guy
-  puts bad_guy.health
+  bad_guy.status
   knight.train
   puts "\n-----------\n\n"
 end
 
 (1..14).each do |n|
-  puts "chinchinhealth is #{other_bad_guy.health}"
+  other_bad_guy.status
   locast.slam other_bad_guy
-  puts "locast health is #{locast.health}"
-  puts other_bad_guy.health
+  other_bad_guy.status
+  locast.status
   puts "\n-----------\n\n"
 end
 
 (1..40).each do |n|
   mage.heal
+  mage.status
   puts "\n-----------\n\n"
 end
