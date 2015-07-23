@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-module Messenger
+module Logger
   def colors
     {
       black: '30',
@@ -32,7 +32,7 @@ end
 class Character
   attr_reader :name, :color, :health, :strength, :mana, :armor, :level, :crit_chance, :crit_damage, :weight, :alive
 
-  include Messenger
+  include Logger
 
   def initialize args={}
     args = defaults.merge(args)
