@@ -8,6 +8,7 @@ WINDOW_HEIGHT = 768
 module ZOrder
   BACKGROUND = 0
   PLAYER = 10
+  GUI = 20
 end
 
 class GameWindow < Gosu::Window
@@ -16,8 +17,9 @@ class GameWindow < Gosu::Window
     self.caption = 'Knooght, the MMMMOORPG'
 
     @background_image = Gosu::Image.new 'images/background.jpg', tileable: true
-    @player1 = Knight.new player_number: 0
-    @player2 = Mage.new player_number: 1
+    @player1 = Knight.new player_number: 0, name: 'player1left'
+    @player2 = Mage.new player_number: 1, name: 'player2right'
+    @gui = GUI.new player1: @player1, player2: @player2
   end
 
   def update
@@ -35,6 +37,7 @@ class GameWindow < Gosu::Window
     @background_image.draw 0, 0, ZOrder::BACKGROUND
     @player1.draw
     @player2.draw
+    @gui.draw
   end
 
   def button_down id
@@ -44,8 +47,40 @@ class GameWindow < Gosu::Window
   end
 end
 
+class GUI
+  def initialize options
+    @player1 = options[:player1]
+    @player2 = options[:player2]
+    @max_width = 300
+    @begin_margin = 10
+    @top_margin = 10
+    @height = 20
+    @color = Gosu::Color::RED
+  end
+
+  def health_bar health, max_health, is_left
+    width = health * @max_width / max_health
+    Gosu::draw_rect(
+      (is_left ? @begin_margin : WINDOW_WIDTH - width - @begin_margin),
+      @top_margin,
+      width,
+      @height,
+      @color,
+      ZOrder::GUI,
+      :default
+    )
+  end
+
+  def draw
+    health_bar @player1.health, @player1.max_health, true
+    if @player2
+      health_bar @player2.health, @player2.max_health, false
+    end
+  end
+end
+
 class Character
-  attr_reader :name, :color, :player_number, :health, :strength, :mana, :armor, :level, :crit_chance, :crit_damage, :weight, :alive
+  attr_reader :name, :color, :player_number, :health, :max_health, :strength, :mana, :armor, :level, :crit_chance, :crit_damage, :weight, :alive
 
   #include Logger
 
@@ -56,6 +91,7 @@ class Character
     @color = args[:color]
     @player_number = args[:player_number]
     @health = args[:health].to_f
+    @max_health = args[:health].to_f
     @strength = args[:strength].to_f
     @mana = args[:mana]
     @armor = args[:armor]
@@ -93,15 +129,17 @@ class Character
   end
 
   def attack enemy
-    if rand(100) <= @crit_chance
-      critical_damage = @strength + @strength * @crit_damage / 100
-  #    say "critical attacks #{colorize enemy.name, enemy.color} and deals #{critical_damage} damage"
-      enemy.injure critical_damage
-    else
-   #   say "attacks #{colorize enemy.name, enemy.color} and deals #{@strength} damage"
-      enemy.injure @strength
+    if @state == :idle
+      if rand(100) <= @crit_chance
+        critical_damage = @strength + @strength * @crit_damage / 100
+    #    say "critical attacks #{colorize enemy.name, enemy.color} and deals #{critical_damage} damage"
+        enemy.injure critical_damage
+      else
+     #   say "attacks #{colorize enemy.name, enemy.color} and deals #{@strength} damage"
+        enemy.injure @strength
+      end
+      @state = :attacking
     end
-    @state = :attacking
   end
 
   def animate time
@@ -126,7 +164,7 @@ class Character
   end
 
   def status
-  #  say "- health: #{@health}, strength: #{@strength}, mana: #{@mana}, crit_chance: #{@crit_chance}, crit_damage: #{@crit_damage}"
+    puts "#{@name} - health: #{@health}, max_health: #{@max_health} strength: #{@strength}, mana: #{@mana}, crit_chance: #{@crit_chance}, crit_damage: #{@crit_damage}"
   end
 
   protected
@@ -138,6 +176,7 @@ class Character
       @health = 0
       death
     end
+    status
   end
 
   private
@@ -226,5 +265,6 @@ class Mage < Character
     end
   end
 end
+
 window = GameWindow.new
 window.show
