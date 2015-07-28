@@ -99,6 +99,8 @@ class Character
     @crit_chance = args[:crit_chance].to_f
     @crit_damage = args[:crit_damage].to_f
     @weight = args[:weight]
+    @animation_frames = args[:animation_frames]
+    @current_frame = @animation_frames[0]
     @alive = true
     @draw_options = {
       x: (@player_number == 0 ? 250 : WINDOW_WIDTH-250),
@@ -111,8 +113,6 @@ class Character
       tile_height: 492
     }
     @state = :idle
-    @animation_frames = [0, 1, 2]
-    @current_frame = 0
     @start_time = nil
     @frame_time = 250
     @player_sprites = Gosu::Image.load_tiles 'images/char-sprite.png', @draw_options[:tile_width], @draw_options[:tile_height]
@@ -145,13 +145,13 @@ class Character
   def animate time
     case @state
     when :idle
-      @current_frame = 0
+      @current_frame = @animation_frames[0]
     when :attacking
       @start_time ||= time
       if Gosu::milliseconds <= (@frame_time + @start_time)
-        @current_frame = 1
+        @current_frame = @animation_frames[1]
       elsif Gosu::milliseconds <= ((@frame_time * 2) + @start_time)
-        @current_frame = 2
+        @current_frame = @animation_frames[2]
       else
         @state = :idle
         @start_time = nil
@@ -197,10 +197,11 @@ class Knight < Character
       strength: 75,
       mana: 100,
       armor: 0,
+      level: 0,
       crit_chance: 20,
       crit_damage: 25,
       weight: 200,
-      alive: true
+      animation_frames: [0, 1, 2]
     }
   end
 
@@ -221,10 +222,11 @@ class Berserker < Character
       strength: 100,
       mana: 0,
       armor: 0,
+      level: 0,
       crit_chance: 10,
       crit_damage: 60,
       weight: 300,
-      alive: true
+      animation_frames: [6, 7, 8]
     }
   end
 
@@ -246,10 +248,11 @@ class Mage < Character
       strength: 20,
       mana: 500,
       armor: 0,
+      level: 0,
       crit_chance: 40,
       crit_damage: 20,
       weight: 100,
-      alive: true
+      animation_frames: [3, 4, 5]
     }
   end
 
