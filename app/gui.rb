@@ -3,12 +3,14 @@ class GUI
     @player1 = options[:player1]
     @player2 = options[:player2]
     @height = 20
-    @max_width = 300
+    @max_width = 400
     @begin_margin = 20
-    @top_margin = 20
+    @top_margin = 58
     @chrome_padding = 5
     @color = Gosu::Color::RED
     @chrome_color = Gosu::Color.new 77, 0, 0, 0
+    @text_color = Gosu::Color.new 177, 0, 0, 0
+    @font = Gosu::Font.new 40, name: '/Users/dh/Library/Fonts/SanukLF-Bold.otf'
   end
 
   def chrome is_left
@@ -36,11 +38,28 @@ class GUI
     )
   end
 
+  def name name, is_left
+    @font.draw_rel(
+      name,
+      (is_left ? @begin_margin - @chrome_padding : WINDOW_WIDTH - @begin_margin + @chrome_padding),
+      10,
+      ZOrder::GUI,
+      (is_left ? 0 : 1),
+      0,
+      1,
+      1,
+      @text_color,
+      :default
+    )
+  end
+
   def draw
     chrome true
+    name @player1.name, true
     health_bar @player1.health, @player1.max_health, true
     if @player2
       chrome false
+      name @player2.name, false
       health_bar @player2.health, @player2.max_health, false
     end
   end
