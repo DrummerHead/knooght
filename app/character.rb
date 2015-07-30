@@ -1,90 +1,8 @@
-#!/usr/bin/env ruby
-
-require 'gosu'
-
-WINDOW_WIDTH = 1024
-WINDOW_HEIGHT = 768
-
-module ZOrder
-  BACKGROUND = 0
-  PLAYER = 10
-  GUI = 20
-end
-
-class GameWindow < Gosu::Window
-  def initialize
-    super WINDOW_WIDTH, WINDOW_HEIGHT
-    self.caption = 'Knooght, the MMMMOORPG'
-
-    @background_image = Gosu::Image.new 'images/background.jpg', tileable: true
-    @player1 = Knight.new player_number: 0, name: 'player1left'
-    @player2 = Mage.new player_number: 1, name: 'player2right'
-    @gui = GUI.new player1: @player1, player2: @player2
-  end
-
-  def update
-    if Gosu::button_down? Gosu::KbF
-      @player1.attack @player2
-    end
-    if Gosu::button_down? Gosu::KbJ
-      @player2.attack @player1
-    end
-    @player1.animate Gosu::milliseconds
-    @player2.animate Gosu::milliseconds
-  end
-
-  def draw
-    @background_image.draw 0, 0, ZOrder::BACKGROUND
-    @player1.draw
-    @player2.draw
-    @gui.draw
-  end
-
-  def button_down id
-    if id == Gosu::KbEscape
-      close
-    end
-  end
-end
-
-class GUI
-  def initialize options
-    @player1 = options[:player1]
-    @player2 = options[:player2]
-    @max_width = 300
-    @begin_margin = 10
-    @top_margin = 10
-    @height = 20
-    @color = Gosu::Color::RED
-  end
-
-  def health_bar health, max_health, is_left
-    width = health * @max_width / max_health
-    Gosu::draw_rect(
-      (is_left ? @begin_margin : WINDOW_WIDTH - width - @begin_margin),
-      @top_margin,
-      width,
-      @height,
-      @color,
-      ZOrder::GUI,
-      :default
-    )
-  end
-
-  def draw
-    health_bar @player1.health, @player1.max_health, true
-    if @player2
-      health_bar @player2.health, @player2.max_health, false
-    end
-  end
-end
-
 class Character
   attr_reader :name, :color, :player_number, :health, :max_health, :strength, :mana, :armor, :level, :crit_chance, :crit_damage, :weight, :alive
 
   #include Logger
-
-  def initialize args={}
+def initialize args={}
     args = defaults.merge(args)
 
     @name = args[:name]
@@ -268,6 +186,3 @@ class Mage < Character
     end
   end
 end
-
-window = GameWindow.new
-window.show

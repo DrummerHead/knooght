@@ -1,0 +1,8 @@
+WINDOW_WIDTH = 1024
+WINDOW_HEIGHT = 768
+
+module ZOrder
+  BACKGROUND = 0
+  PLAYER = 10
+  GUI = 20
+end
