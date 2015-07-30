@@ -40,12 +40,6 @@ def initialize args={}
     raise NotImplementedError, "This #{self.class} cannot respond to:"
   end
 
-  def debug_sprite
-    @player_sprites[6].draw 0, 0, ZOrder::PLAYER
-    @player_sprites[7].draw 0, 0, ZOrder::PLAYER
-    @player_sprites[8].draw 0, 0, ZOrder::PLAYER
-  end
-
   def attack enemy
     if @state == :idle
       if rand(100) <= @crit_chance
@@ -78,7 +72,16 @@ def initialize args={}
   end
 
   def draw
-    @player_sprites[@current_frame].draw_rot @draw_options[:x], @draw_options[:y], ZOrder::PLAYER, 0, @draw_options[:center_x], @draw_options[:center_y], @draw_options[:scale_x], @draw_options[:scale_y]
+    @player_sprites[@current_frame].draw_rot(
+      @draw_options[:x],
+      @draw_options[:y],
+      ZOrder::PLAYER,
+      0,
+      @draw_options[:center_x],
+      @draw_options[:center_y],
+      @draw_options[:scale_x],
+      @draw_options[:scale_y]
+    )
   end
 
   def status
