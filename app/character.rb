@@ -1,5 +1,5 @@
 class Character
-  attr_reader :name, :color, :player_number, :health, :max_health, :strength, :mana, :armor, :level, :crit_chance, :crit_damage, :weight, :alive
+  attr_reader :name, :color, :player_number, :health, :max_health, :strength, :mana, :armor, :level, :crit_chance, :crit_damage, :weight
 
   #include Logger
 def initialize args={}
@@ -19,7 +19,6 @@ def initialize args={}
     @weight = args[:weight]
     @animation_frames = args[:animation_frames]
     @current_frame = @animation_frames[0]
-    @alive = true
     @draw_options = {
       x: (@player_number == 0 ? 250 : WINDOW_WIDTH-250),
       y: 450,
@@ -28,9 +27,10 @@ def initialize args={}
       scale_x: (@player_number == 0 ? 1 : -1),
       scale_y: 1,
       tile_width: 508,
-      tile_height: 492
+      tile_height: 492,
+      opacity: 255
     }
-    @state = :idle
+    @state = :idle # [:idle, :attacking, :dead]
     @start_time = nil
     @frame_time = 250
     @player_sprites = Gosu::Image.load_tiles 'images/char-sprite.png', @draw_options[:tile_width], @draw_options[:tile_height]
@@ -68,6 +68,8 @@ def initialize args={}
         @state = :idle
         @start_time = nil
       end
+    when :dead
+      @draw_options[:opacity] -= 7 if @draw_options[:opacity] > 0
     end
   end
 
@@ -80,12 +82,13 @@ def initialize args={}
       @draw_options[:center_x],
       @draw_options[:center_y],
       @draw_options[:scale_x],
-      @draw_options[:scale_y]
+      @draw_options[:scale_y],
+      Gosu::Color.new(@draw_options[:opacity], 255, 255, 255)
     )
   end
 
   def status
-    puts "#{@name} - health: #{@health}, max_health: #{@max_health} strength: #{@strength}, mana: #{@mana}, crit_chance: #{@crit_chance}, crit_damage: #{@crit_damage}"
+    puts "#{@name} - health: #{@health}, max_health: #{@max_health} strength: #{@strength}, mana: #{@mana}, crit_chance: #{@crit_chance}, crit_damage: #{@crit_damage}, state: #{@state}"
   end
 
   protected
@@ -104,7 +107,7 @@ def initialize args={}
 
   def death
     #say "is dead"
-    @alive = false
+    @state = :dead
   end
 end
 
