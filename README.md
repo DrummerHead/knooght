@@ -20,7 +20,7 @@ cd app && ./main.rb
 
 ## Controls
 
-k - Left player attack
+f - Left player attack
 
 j - Right player attack
 
