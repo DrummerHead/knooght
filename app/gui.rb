@@ -53,6 +53,20 @@ class GUI
     )
   end
 
+  # TODO: This next method is where my doubts begin. I need to send damage message from instance of a character to gui, but it's actually gui who has the player by dependency injection. So how do I signal to gui that there was a damage?
+  def damage_info damage
+    @font.draw(
+      damage,
+      200,
+      200,
+      ZOrder::GUI,
+      1,
+      1,
+      @color,
+      :default
+    )
+  end
+
   def draw
     chrome true
     name @player1.name, true
