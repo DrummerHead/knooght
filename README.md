@@ -21,6 +21,7 @@ cd app && ./main.rb
 ## Controls
 
 k - Left player attack
+
 j - Right player attack
 
 That's it for now!
